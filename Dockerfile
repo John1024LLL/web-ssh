@@ -6,7 +6,7 @@ RUN apk add --no-cache bash openssh-client
 # 下载 GoTTY 最新二进制（替换为最新版本链接）
 RUN wget https://github.com/sorenisanerd/gotty/releases/download/v1.6.0/gotty_v1.6.0_linux_amd64.tar.gz -O gotty.tar.gz \
     && tar -xzf gotty.tar.gz \
-    && mv gotty-linux-amd64 /usr/local/bin/gotty \
+    && mv gotty /usr/local/bin/gotty \
     && chmod +x /usr/local/bin/gotty \
     && rm gotty.tar.gz
 
