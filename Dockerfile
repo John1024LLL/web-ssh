@@ -1,13 +1,21 @@
-FROM node:18-alpine
+FROM golang:1.21-alpine
 
-# 安装 wetty（Web SSH 终端）
-RUN npm install -g wetty
+# 安装 bash 和 openssh-client
+RUN apk add --no-cache bash openssh-client
 
-# 创建一个测试用户（用户名：user，密码：password）
+# 下载 GoTTY 最新二进制（替换为最新版本链接）
+RUN wget https://github.com/sorenisanerd/gotty/releases/download/v1.0.1/gotty-linux-amd64.tar.gz -O gotty.tar.gz \
+    && tar -xzf gotty.tar.gz \
+    && mv gotty-linux-amd64 /usr/local/bin/gotty \
+    && chmod +x /usr/local/bin/gotty \
+    && rm gotty.tar.gz
+
+# 创建测试用户（用户名 user，密码 password）
 RUN adduser -D user && echo "user:password" | chpasswd
 
-# 暴露 Render 默认 HTTP 端口
+# 暴露 Render 默认端口
 EXPOSE 8080
 
-# 启动 wetty（绑定 0.0.0.0，让 Render 能访问）
-CMD ["wetty", "--base", "/", "--ssh-host", "localhost", "--ssh-user", "user", "--port", "8080", "--allow-iframe"]
+# 以 user 身份运行 gotty，启动 bash 终端，允许匿名访问不安全，实际部署建议加认证
+CMD ["gotty", "--port", "8080", "--permit-write", "--credential", "user:password", "bash", "-l"]
+

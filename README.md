@@ -1,16 +1,15 @@
-# Render Web SSH Terminal
+# Render GoTTY Web SSH Terminal
 
-一个在 Render 免费版上运行的网页版 SSH 终端（基于 Wetty）。
+基于 GoTTY 的网页版 SSH 终端，适合部署在 Render 免费层。
 
 ## 登录信息
+
 - 用户名: user
 - 密码: password
 
 ## 部署步骤
-1. Fork 本仓库到你的 GitHub
-2. 打开 [Render](https://render.com)，选择 **New Web Service**
-3. 连接到你 Fork 的仓库
-4. Environment 选择 `Docker`
-5. Branch 填 `main`
-6. 创建后等待部署完成
-7. 打开 Render 给的 URL，输入用户名和密码登录
+
+1. Fork 本仓库
+2. 在 Render 创建新 Web Service，选择 Docker 部署，连接到 Fork 的仓库
+3. 等待构建完成，访问 Render 给的 URL
+4. 使用上述用户名密码登录
