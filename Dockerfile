@@ -1,27 +1,20 @@
-# 基础镜像
-FROM debian:stable-slim
+FROM golang:1.21-alpine
 
-# 安装 Shadowsocks-libev
-RUN apt-get update \
-    && apt-get install -y shadowsocks-libev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# 安装 bash 和 openssh-client
+RUN apk add --no-cache bash openssh-client
 
-# 创建配置文件目录
-RUN mkdir -p /etc/shadowsocks
+# 下载 GoTTY 最新二进制（替换为最新版本链接）
+RUN wget https://github.com/sorenisanerd/gotty/releases/download/v1.6.0/gotty_v1.6.0_linux_amd64.tar.gz -O gotty.tar.gz \
+    && tar -xzf gotty.tar.gz \
+    && mv gotty /usr/local/bin/gotty \
+    && chmod +x /usr/local/bin/gotty \
+    && rm gotty.tar.gz
 
-# 写入默认配置文件
-RUN echo '{
-    "server": "0.0.0.0",
-    "server_port": 8388,
-    "password": "123456789",
-    "method": "aes-256-gcm",
-    "timeout": 300,
-    "fast_open": true
-}' > /etc/shadowsocks/config.json
+# 创建测试用户（用户名 user，密码 password）
+RUN adduser -D user && echo "user:password" | chpasswd
 
-# 开放 Shadowsocks 端口
-EXPOSE 8388
+# 暴露 Render 默认端口
+EXPOSE 8080
 
-# 启动命令
-CMD ["ss-server", "-c", "/etc/shadowsocks/config.json", "-u"]
+# 以 user 身份运行 gotty，启动 bash 终端，允许匿名访问不安全，实际部署建议加认证
+CMD ["gotty", "--port", "8080", "--permit-write", "--credential", "user:password", "bash", "-l"]
